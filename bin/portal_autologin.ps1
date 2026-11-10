@@ -37,10 +37,14 @@ param(
     [string]$PortalUrl = '',
     [int]$NasId = 0,
     [string]$StateDir = (Join-Path $env:APPDATA 'campus-portal-autologin'),
+    [switch]$NoProxy,
+    [switch]$SendClientInfo,
     [switch]$Force
 )
 
 $ErrorActionPreference = 'Stop'
+
+if ($NoProxy) { [System.Net.WebRequest]::DefaultWebProxy = $null }
 
 $ConfigPath = Join-Path $StateDir 'config.json'
 $SecretPath = Join-Path $StateDir 'secret.txt'
@@ -140,6 +144,21 @@ function Post-Login($Config) {
         nasId     = $nas
         captcha   = ''
         captchaId = ''
+    }
+    if ($SendClientInfo) {
+        # Only for a machine directly on the campus link: behind NAT these are
+        # not the address/MAC the NAS sees.
+        $route = Get-NetRoute -DestinationPrefix '0.0.0.0/0' -ErrorAction SilentlyContinue |
+            Sort-Object RouteMetric | Select-Object -First 1
+        if ($route) {
+            $addr = Get-NetIPAddress -InterfaceIndex $route.ifIndex -AddressFamily IPv4 -ErrorAction SilentlyContinue |
+                Where-Object { $_.IPAddress -notlike '169.254.*' } | Select-Object -First 1
+            $adapter = Get-NetAdapter -InterfaceIndex $route.ifIndex -ErrorAction SilentlyContinue
+            if ($addr) { $body.userIpv4 = $addr.IPAddress }
+            if ($adapter -and $adapter.MacAddress) {
+                $body.userMac = ($adapter.MacAddress -replace '-', ':').ToLower()
+            }
+        }
     }
     $raw = Invoke-Portal -Path '/api/account/login' -Session $script:Session `
         -Headers @{ 'X-CSRF-Token' = $token } -Body $body

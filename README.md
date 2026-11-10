@@ -90,6 +90,16 @@ powershell -ExecutionPolicy Bypass -File bin\portal_autologin.ps1 run       # �
 PC 在 NAT 后面时，门户看到的是路由器的公网 IP，因此也能维持路由器的会话——前提是门户按
 **来源 IP** 认证且不强制 MAC 绑定（见兼容性）。
 
+## 没有路由器？
+
+脚本可以只跑在电脑上：电脑**直连校园网**时维持自己的会话；电脑开**移动热点**时，热点下的
+手机/平板共用它的出口，也能一并保住（电脑必须开机）。Windows 用任务计划 + 隐藏 VBS 启动器，
+Linux/macOS 用 cron/launchd；代理软件必须放行门户（PowerShell 版加 `-NoProxy`，或在代理里
+给门户加 DIRECT）。完整步骤、隐藏运行和常见坑见 [docs/NO_ROUTER.md](docs/NO_ROUTER.md)。
+
+手机单独连校园网时本方案覆盖不到——那种情况仍需要一个常开设备（旧手机、迷你主机、
+路由器都可以）。
+
 ## 配置项（环境变量）
 
 | 变量 | 默认 | 说明 |
@@ -136,7 +146,8 @@ bin/portal_autologin.ps1        Windows PC 版（beta）
 docs/DESIGN.md                  设计、状态机、决策与失败模式
 docs/PROTOCOL.md                门户接口与协议细节
 docs/COMPATIBILITY.md           迁移评估与适配指南
-examples/                       配置样例
+docs/NO_ROUTER.md               没有路由器：在电脑上运行（含隐藏启动器）
+examples/                       配置样例与 Windows 隐藏启动器
 ```
 
 ## 安全模型
