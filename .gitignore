@@ -1,0 +1,8 @@
+# Never commit credentials or runtime state
+login.conf
+nas.conf
+secret.txt
+*.state
+*.bounce
+*.log
+.test-state/

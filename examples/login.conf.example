@@ -1,0 +1,3 @@
+# Copy to /etc/portal/login.conf (chmod 600) or run bin/portal_set_credentials.sh.
+USERNAME='your-account'
+PASSWORD='your-password'
