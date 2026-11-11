@@ -7,6 +7,18 @@
   状态 **PASS**（受控注销后自动登录并验证在线）。
 - Windows PC 版：**beta**（在线状态检查已验证；登录路径与路由器同协议，未在同校 PC 上重测）。
 - 其他校园的兼容性：**取决于门户类型**，见 [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md)。
+- R3G 部署实例（含 nasId、WAN 重连与验收记录）：
+  [r3g-dorm-lab/router/portal_autologin](https://github.com/OrdoAbChao7/r3g-dorm-lab/tree/main/router/portal_autologin)。
+
+## 验证状态（WHUT 有线口）
+
+| 项目 | 状态 |
+|---|---|
+| 在线状态判断（`/api/account/status`） | 已验证：在线/离线均正确 |
+| 受控注销后自动登录 | 已验证：`login OK and verified online (… nas 52)` |
+| 在线保护（拒绝补登录） | 已验证：`session is online; refusing test-login` |
+| 自然过期（非注销）路径 | 待观察 |
+| “设备IP不在线”后的 WAN 重连兜底 | 已实现；实测中该分支曾把会话等回来，但并非每次立刻生效 |
 
 ## 它解决什么问题
 
